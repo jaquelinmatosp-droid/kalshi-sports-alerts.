@@ -24,6 +24,7 @@ CREATE TABLE IF NOT EXISTS large_trades (
 );
 CREATE INDEX IF NOT EXISTS idx_large_trades_detected_at
     ON large_trades (detected_at DESC);
+ALTER TABLE large_trades ADD COLUMN IF NOT EXISTS game_phase TEXT;
 """
 
 
@@ -53,11 +54,11 @@ def insert_large_trade(trade: dict) -> bool:
                 INSERT INTO large_trades (
                     trade_id, ticker, event_ticker, series_ticker, market_title,
                     side, count_fp, price_dollars, notional_dollars,
-                    taker_side, taker_book_side, created_time
+                    taker_side, taker_book_side, created_time, game_phase
                 ) VALUES (%(trade_id)s, %(ticker)s, %(event_ticker)s, %(series_ticker)s,
                           %(market_title)s, %(side)s, %(count_fp)s, %(price_dollars)s,
                           %(notional_dollars)s, %(taker_side)s, %(taker_book_side)s,
-                          %(created_time)s)
+                          %(created_time)s, %(game_phase)s)
                 ON CONFLICT (trade_id) DO NOTHING
                 RETURNING trade_id
                 """,
