@@ -10,13 +10,22 @@ def send_telegram_alert(trade: dict) -> None:
     if not BOT_TOKEN or not CHAT_ID:
         return
 
+    phase_labels = {
+        "pre-partido": "Pre-partido",
+        "en directo": "En directo",
+        "post-partido": "Post-partido",
+        "desconocido": "Fase desconocida",
+    }
+    phase = phase_labels.get(trade.get("game_phase"), "Fase desconocida")
+
     text = (
         "Movimiento grande detectado\n"
         f"{trade['market_title']}\n"
         f"Serie: {trade['series_ticker']}\n"
         f"Lado: {trade['side'].upper()}\n"
         f"{trade['count_fp']:.0f} contratos a ${trade['price_dollars']:.2f}\n"
-        f"Notional: ${trade['notional_dollars']:.2f}"
+        f"Notional: ${trade['notional_dollars']:.2f}\n"
+        f"{phase}"
     )
     url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
     try:
