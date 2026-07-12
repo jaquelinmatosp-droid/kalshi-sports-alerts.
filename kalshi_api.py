@@ -46,6 +46,9 @@ def get_open_markets_for_series(series_ticker: str) -> list[dict]:
                         "event_ticker": event["event_ticker"],
                         "title": event.get("title", ""),
                         "yes_sub_title": market.get("yes_sub_title", ""),
+                        "expected_expiration_time": market.get(
+                            "expected_expiration_time"
+                        ),
                     }
                 )
         cursor = data.get("cursor")
