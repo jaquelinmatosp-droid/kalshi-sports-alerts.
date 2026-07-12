@@ -7,6 +7,20 @@ def _format_time(value) -> str:
     return str(value)
 
 
+_PHASE_LABELS = {
+    "pre-partido": "Pre-partido",
+    "en directo": "En directo",
+    "post-partido": "Post-partido",
+    "desconocido": "?",
+}
+_PHASE_CLASS = {
+    "pre-partido": "phase-pre",
+    "en directo": "phase-live",
+    "post-partido": "phase-post",
+    "desconocido": "phase-unknown",
+}
+
+
 def render_dashboard(trades: list[dict], summary: dict) -> str:
     if trades:
         rows = "".join(
@@ -18,12 +32,13 @@ def render_dashboard(trades: list[dict], summary: dict) -> str:
 <td>{float(t['count_fp']):,.0f}</td>
 <td>${float(t['price_dollars']):.2f}</td>
 <td>${float(t['notional_dollars']):,.2f}</td>
+<td class="{_PHASE_CLASS.get(t.get('game_phase'), 'phase-unknown')}">{_PHASE_LABELS.get(t.get('game_phase'), '?')}</td>
 </tr>"""
             for t in trades
         )
     else:
         rows = (
-            '<tr><td colspan="7" class="empty">'
+            '<tr><td colspan="8" class="empty">'
             "Todavia no se ha detectado ningun movimiento grande."
             "</td></tr>"
         )
@@ -50,6 +65,10 @@ def render_dashboard(trades: list[dict], summary: dict) -> str:
   th {{ color: #9a9ea8; font-weight: 400; }}
   .side-yes {{ color: #6fd08c; font-weight: 500; }}
   .side-no {{ color: #e0716f; font-weight: 500; }}
+  .phase-pre {{ color: #6fa8d0; }}
+  .phase-live {{ color: #e0b96f; }}
+  .phase-post {{ color: #9a9ea8; }}
+  .phase-unknown {{ color: #6a6e78; }}
   .empty {{ color: #9a9ea8; padding: 20px 0; font-size: 13px; text-align: center; }}
 </style>
 </head>
@@ -62,7 +81,7 @@ def render_dashboard(trades: list[dict], summary: dict) -> str:
   <div class="card"><div class="label">Series activas</div><div class="value">{summary['sports']}</div></div>
 </div>
 <table>
-<thead><tr><th>Hora</th><th>Mercado</th><th>Serie</th><th>Lado</th><th>Contratos</th><th>Precio</th><th>Notional</th></tr></thead>
+<thead><tr><th>Hora</th><th>Mercado</th><th>Serie</th><th>Lado</th><th>Contratos</th><th>Precio</th><th>Notional</th><th>Fase</th></tr></thead>
 <tbody>{rows}</tbody>
 </table>
 </body>
